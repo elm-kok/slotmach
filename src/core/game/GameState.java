@@ -1,25 +1,19 @@
 package core.game;
 
 import java.io.BufferedReader;
-<<<<<<< HEAD
 import java.io.File;
 import java.io.FileReader;
-=======
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
->>>>>>> upstream/master
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-<<<<<<< HEAD
 import java.util.Map.Entry;
 import core.asset.*;
-=======
 
->>>>>>> upstream/master
 import core.settings.Settings;
 
 public class GameState {
@@ -35,7 +29,6 @@ public class GameState {
 	private List<Boolean> matchRow;
 	private boolean isCanPull;
 	private boolean isJackpot = false;
-<<<<<<< HEAD
 	private String path = "";
 	private Map<String, Integer> score = new HashMap<String, Integer>();
 
@@ -56,7 +49,8 @@ public class GameState {
 				while ((line = in.readLine()) != null) {
 					if (line.split(" ").length == 2) {
 						score.put(line.split(" ")[0], Integer.parseInt(line.split(" ")[1]) * -1);
-					} else throw new InvalidFileException("SlotMachine/score.txt");
+					} else
+						throw new InvalidFileException("SlotMachine/score.txt");
 				}
 				in.close();
 			} catch (IOException | InvalidFileException e) {
@@ -75,14 +69,9 @@ public class GameState {
 		} else {
 			System.out.println(customDir + " was not created");
 		}
-=======
-	private boolean isShowPriceTab = false;
-	private Map<String, Integer> score;
-
-	public GameState() {
-		reset();
->>>>>>> upstream/master
 	}
+
+	private boolean isShowPriceTab = false;
 
 	public boolean isMatchRow(int i) {
 		return matchRow.get(i).booleanValue();
@@ -209,12 +198,10 @@ public class GameState {
 		this.score.put(name, -money);
 	}
 
-<<<<<<< HEAD
 	public String getPath() {
 		return path;
 	}
 
-=======
 	public boolean isShowPriceTab() {
 		return isShowPriceTab;
 	}
@@ -271,5 +258,4 @@ public class GameState {
 			e.printStackTrace();
 		}
 	}
->>>>>>> upstream/master
 }
