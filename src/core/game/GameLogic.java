@@ -129,7 +129,7 @@ public class GameLogic {
 								* gameModel.gameState.getRowMultiplier());
 						if (prize > 0) {
 							// The player wins some slots
-							yaySFX.play();
+							if(!gameModel.gameState.isJackpot())yaySFX.play();
 							gameModel.gameState.giveMoney(payout);
 							gameModel.gameState.setCanPull(false);
 							lastMatchAnimationTime = System.nanoTime();
@@ -239,7 +239,6 @@ public class GameLogic {
 					gameModel.slotMachine.setBuyCol(true);
 					gameModel.slotMachine.setBuyColx(SlotType.SLOT_PROGMETH);
 					gameModel.gameState.setPayout(gameModel.gameState.getPayout() - Settings.PLAYER_PAID_BUYCOL);
-					cashSFX.play();
 				}
 			}
 		}
