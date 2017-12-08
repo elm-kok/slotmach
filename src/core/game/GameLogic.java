@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import core.asset.AssetID;
+import core.asset.InvalidFileException;
 import core.asset.sfx.MusicPlayer;
 import core.model.Pricing;
 import core.model.SlotType;
@@ -99,18 +100,24 @@ public class GameLogic {
 		// Check for key presses
 		KeyCode triggeredKey;
 		while ((triggeredKey = InputHandler.pollTriggeredKey()) != null) {
-			if (gameModel.gameState.getMoney() <= 0 && gameModel.slotMachine.isAllStop()) {
+			if (gameModel.gameState.getMoney() < Settings.PLAYER_PAID_PULL && gameModel.slotMachine.isAllStop()) {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
 						// Game over
 						gameModel.gameState.writeScore();
 						gameModel.gameState.reset();
+						try {
+							gameModel.gameState.loadScore();
+						} catch (InvalidFileException e) {
+							e.showAlertAndExit();
+						}
 						gameModel.slotMachine.setAddlerColumns(0);
 						gameModel.slotMachine.setAddlerRow(0);
 						gameModel.slotMachine.stopAll();
 						lastMatchAnimationTime = System.nanoTime();
-						SceneManager.gotoNameInput();
+						SceneManager.gotoGameOver();
+						stopGame();
 					}
 				});
 			}
@@ -129,7 +136,8 @@ public class GameLogic {
 								* gameModel.gameState.getRowMultiplier());
 						if (prize > 0) {
 							// The player wins some slots
-							if(!gameModel.gameState.isJackpot())yaySFX.play();
+							if (!gameModel.gameState.isJackpot())
+								yaySFX.play();
 							gameModel.gameState.giveMoney(payout);
 							gameModel.gameState.setCanPull(false);
 							lastMatchAnimationTime = System.nanoTime();
@@ -244,7 +252,15 @@ public class GameLogic {
 		}
 
 		// Handle animation time
-		if (System.nanoTime() - lastMatchAnimationTime >= Settings.ANIMATION_MATCH_TIME
+		if (gameModel.gameState.isJackpot()) {
+			if (System.nanoTime() - lastMatchAnimationTime >= Settings.ANIMATION_MATCH_TIME_JP
+					&& !gameModel.gameState.isCanPull()) {
+				gameModel.gameState.clearMatch();
+				gameModel.gameState.setJackpot(false);
+				gameModel.gameState.setCanPull(true);
+				gameModel.gameState.setPayout(0);
+			}
+		} else if (System.nanoTime() - lastMatchAnimationTime >= Settings.ANIMATION_MATCH_TIME
 				&& !gameModel.gameState.isCanPull()) {
 			gameModel.gameState.clearMatch();
 			gameModel.gameState.setCanPull(true);
@@ -265,12 +281,16 @@ public class GameLogic {
 			int prz = Pricing.getPrice(slotCode);
 			if (prz > 0)
 				gameModel.gameState.matchRow(startRow + i);
-			for (int j = 0; j + 8 <= slotCode.length(); j += 8)
+			boolean isjackpot = false;
+			for (int j = 0; j + 8 <= slotCode.length() && slotCode.length() % 8 == 0; j += 8) {
 				if (slotCode.substring(j, j + 8).equals("progmeth")) {
-					gameModel.gameState.setJackpot(true);
-					jackpotSFX.play();
+					isjackpot = true;
+				} else {
+					isjackpot = false;
+					break;
 				}
-			if (prz >= 10000) {
+			}
+			if (isjackpot) {
 				gameModel.gameState.setJackpot(true);
 				jackpotSFX.play();
 			}
