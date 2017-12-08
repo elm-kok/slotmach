@@ -61,7 +61,6 @@ public class GameState {
 		}
 	}
 
-
 	public boolean isMatchRow(int i) {
 		return matchRow.get(i).booleanValue();
 	}

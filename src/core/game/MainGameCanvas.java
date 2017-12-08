@@ -2,7 +2,6 @@ package core.game;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import core.asset.AssetCache;
 import core.asset.AssetID;
@@ -33,7 +32,6 @@ public class MainGameCanvas extends GameCanvas {
 
 	private List<LightBox> leftLights = new ArrayList<>();
 	private List<LightBox> rightLights = new ArrayList<>();
-	private long start = 0;
 
 	private PriceTab priceTab = new PriceTab(0, Settings.GAME_CANVAS_HEIGHT / 10);
 
